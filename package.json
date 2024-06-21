@@ -6,6 +6,8 @@
         "build": "tsc && vite build"
     },
     "devDependencies": {
+        "@eslint/compat": "^1.1.0",
+        "@eslint/js": "^9.5.0",
         "@headlessui/react": "^1.4.2",
         "@inertiajs/react": "^1.0.0",
         "@tailwindcss/forms": "^0.5.3",
@@ -15,12 +17,29 @@
         "@vitejs/plugin-react": "^4.2.0",
         "autoprefixer": "^10.4.12",
         "axios": "^1.6.4",
+        "eslint": "^9.5.0",
+        "eslint-plugin-react": "^7.34.3",
+        "globals": "^15.6.0",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.31",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "tailwindcss": "^3.2.1",
         "typescript": "^5.0.2",
+        "typescript-eslint": "^7.13.1",
         "vite": "^5.0"
+    },
+    "dependencies": {
+        "@dnd-kit/core": "^6.1.0",
+        "@dnd-kit/sortable": "^8.0.0",
+        "@emotion/react": "^11.11.4",
+        "@emotion/styled": "^11.11.5",
+        "@mui/icons-material": "^5.15.19",
+        "@mui/lab": "^5.0.0-alpha.170",
+        "@mui/material": "^5.15.19",
+        "@mui/x-date-pickers": "^7.6.2",
+        "date-fns": "^2.30.0",
+        "react-hook-form": "^7.52.0",
+        "zustand": "^4.5.2"
     }
 }
