@@ -1,0 +1,184 @@
+openapi: 3.0.2
+info:
+  title: Laravel+Reactで作るTODOアプリ（サンプル）
+  version: "1.0"
+servers:
+  - url: https://127.0.0.1/api/v1/
+    description: ローカル環境 API
+paths:
+  /tags:
+    get:
+      summary: タスク一覧取得
+      description: タスク一覧を取得するAPI
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tasks:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskResponse"
+    post:
+      summary: タスク1件作成
+      description: タスクを1件作成します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskStoreRequestBody"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        "400":
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+    put:
+      summary: タスク1件更新
+      description: タスクを1件更新します
+      parameters:
+        - name: id
+          description: ID
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskUpdateRequestBody"
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: タスクが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+    delete:
+      summary: タスク削除
+      description: タスクを削除します
+      parameters:
+        - name: id
+          description: ID
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: OK
+        "404":
+          description: タスクが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+  /tags/bulk_update:
+    post:
+      summary: タスク一括更新
+      description: タスクを一括更新します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/TaskUpdateRequestBody"
+              description: タスクの配列
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: 不正なパラメーター
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+        "404":
+          description: タスクが存在しない
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Errors"
+
+components:
+  schemas:
+    TaskResponse:
+      properties:
+        id:
+          type: number
+          description: ID
+          example: 1
+        title:
+          type: string
+          description: タスク名
+          example: タスク名
+        status:
+          type: string
+          enum: [todo, doing, done]
+          description: ステータス
+          example: todo
+    TaskStoreRequestBody:
+      required:
+        - title
+        - status
+      properties:
+        title:
+          type: string
+          description: タスク名
+          example: タスク名
+        status:
+          type: string
+          enum: [todo, doing, done]
+          description: ステータス
+          example: todo
+    TaskUpdateRequestBody:
+      required:
+        - id
+        - title
+        - status
+      properties:
+        id:
+          type: number
+          description: ID
+          example: 1
+        title:
+          type: string
+          description: タスク名
+          example: タスク名
+        status:
+          type: string
+          enum: [todo, doing, done]
+          description: ステータス
+          example: todo
+    Errors:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: string
+            description: エラーメッセージの配列
+            example: エラーメッセージ
