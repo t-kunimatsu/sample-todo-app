@@ -6,7 +6,7 @@ servers:
   - url: https://127.0.0.1/api/v1/
     description: ローカル環境 API
 paths:
-  /tags:
+  /tasks:
     get:
       summary: タスク一覧取得
       description: タスク一覧を取得するAPI
@@ -94,7 +94,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Errors"
-  /tags/bulk_update:
+  /tasks/bulk_update:
     post:
       summary: タスク一括更新
       description: タスクを一括更新します
