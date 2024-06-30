@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('title');
             $table->string('status');
-            $table->smallInteger('order');
+            $table->unsignedInteger('order');
             $table->timestamps();
             $table->softDeletes();
         });

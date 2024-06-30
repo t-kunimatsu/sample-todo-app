@@ -18,7 +18,15 @@ paths:
               schema:
                 type: object
                 properties:
-                  tasks:
+                  todo:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskResponse"
+                  doing:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/TaskResponse"
+                  done:
                     type: array
                     items:
                       $ref: "#/components/schemas/TaskResponse"
@@ -44,9 +52,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Errors"
-    put:
+  /tags/{id}:
+    patch:
       summary: タスク1件更新
-      description: タスクを1件更新します
+      description: タスクのtitleを1件更新します
       parameters:
         - name: id
           description: ID
@@ -94,34 +103,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Errors"
-  /tags/bulk_update:
-    post:
-      summary: タスク一括更新
-      description: タスクを一括更新します
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/TaskUpdateRequestBody"
-              description: タスクの配列
-      responses:
-        "200":
-          description: OK
-        "400":
-          description: 不正なパラメーター
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Errors"
-        "404":
-          description: タスクが存在しない
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Errors"
 
 components:
   schemas:
@@ -156,14 +137,9 @@ components:
           example: todo
     TaskUpdateRequestBody:
       required:
-        - id
         - title
         - status
       properties:
-        id:
-          type: number
-          description: ID
-          example: 1
         title:
           type: string
           description: タスク名
@@ -173,6 +149,10 @@ components:
           enum: [todo, doing, done]
           description: ステータス
           example: todo
+        position:
+          type: integer
+          description: ステータス内での並び位置（変更する場合のみ指定）
+          example: 2
     Errors:
       type: object
       properties:
