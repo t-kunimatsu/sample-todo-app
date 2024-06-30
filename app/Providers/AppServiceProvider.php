@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Contexts\Task\Domain\Factory\TaskFactory;
+use App\Contexts\Task\Domain\Persistence\TaskRepository;
+use App\Contexts\Task\Infrastructure\Persistence\TaskRepositoryImpl;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,7 +14,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            TaskRepository::class,
+            fn ($app) => new TaskRepositoryImpl($app->make(TaskFactory::class))
+        );
     }
 
     /**
