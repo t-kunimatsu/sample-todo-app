@@ -52,7 +52,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Errors"
-  /tags/{id}:
+  /tasks/{id}:
     patch:
       summary: タスク1件更新
       description: タスクのtitleを1件更新します

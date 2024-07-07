@@ -38,9 +38,7 @@ const Column: FC<ColumnType> = (column) => {
   const handleSaveCard = useCallback(
     (title: string) => {
       if (dialogMode === "add") {
-        // TODO >> idはAPIの戻り値
-        const newCard = { id: `Card${Date.now()}`, title: title };
-        addCard(currentColumnId, newCard);
+        addCard(currentColumnId, title);
       } else if (dialogMode === "edit") {
         editCard({ id: currentCard.id, title: title });
       }

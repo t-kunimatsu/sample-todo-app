@@ -1,3 +1,4 @@
+import { Card, getTask, postTask, Status } from "@/Apis/tasks";
 import { CardType, ColumnType, DialogMode } from "@/types/todo";
 import { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
@@ -6,7 +7,7 @@ import { create } from "zustand";
 type BoardState = {
   columns: ColumnType[];
   setColumns: (columns: ColumnType[]) => void;
-  addCard: (columnId: string, newCard: CardType) => void;
+  addCard: (columnId: Status, title: string) => void;
   editCard: (editCard: CardType) => void;
   handleDragOver: (event: DragOverEvent) => void;
   handleDragEnd: (event: DragEndEvent) => void;
@@ -18,6 +19,7 @@ type BoardState = {
   setDialogOpen: (open: boolean) => void;
   dialogMode: DialogMode;
   setDialogMode: (mode: DialogMode) => void;
+  initializeColumns: () => void;
 };
 
 export const useTodoBoard = create<BoardState>((set, get) => {
@@ -50,13 +52,22 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     });
   };
 
-  const addCard = (columnId: string, newCard: CardType) => {
+  const addCard = async (columnId: Status, title: string) => {
+    const newCard = await postTask({
+      title: title,
+      status: columnId,
+    });
     set((state) => {
       const column = state.columns.find((column) => column.id === columnId);
       if (!column) return state;
       return {
         columns: state.columns.map((column) =>
-          column.id === columnId ? { ...column, cards: [...column.cards, newCard] } : column
+          column.id === columnId
+            ? {
+                ...column,
+                cards: [...column.cards, { id: newCard.id.toString(), title: newCard.title }],
+              }
+            : column
         ),
       };
     });
@@ -132,46 +143,43 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     }
   };
 
-  return {
-    columns: [
-      {
+  const toCardType = (card: Card): CardType => {
+    const { id, title } = card;
+    return { id: id.toString(), title: title };
+  };
+
+  const initializeColumns = async () => {
+    const task = await getTask();
+    set((state) => {
+      const todo = {
         id: "todo",
         title: "ToDo",
-        cards: [
-          {
-            id: "Card1",
-            title: "Card1",
-          },
-          {
-            id: "Card2",
-            title: "Card2",
-          },
-        ],
+        cards: task.todo.map((card) => toCardType(card)),
         showAddTask: true,
         showEditTask: true,
-      },
-      {
+      };
+      const doing = {
         id: "doing",
         title: "Doing",
-        cards: [
-          {
-            id: "Card3",
-            title: "Card3",
-          },
-          {
-            id: "Card4",
-            title: "Card4",
-          },
-        ],
+        cards: task.doing.map((card) => toCardType(card)),
         showAddTask: true,
         showEditTask: true,
-      },
-      {
+      };
+      const done = {
         id: "done",
         title: "Done",
-        cards: [],
-      },
-    ],
+        cards: task.done.map((card) => toCardType(card)),
+        showAddTask: true,
+        showEditTask: true,
+      };
+      return {
+        columns: [todo, doing, done],
+      };
+    });
+  };
+
+  return {
+    columns: [],
     setColumns: (columns) => set({ columns }),
     addCard,
     editCard,
@@ -185,5 +193,6 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     setDialogOpen: (open) => set({ dialogOpen: open }),
     dialogMode: "add",
     setDialogMode: (mode) => set({ dialogMode: mode }),
+    initializeColumns,
   };
 });

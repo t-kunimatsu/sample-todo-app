@@ -9,13 +9,18 @@ import {
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { Box } from "@mui/material";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useTodoBoard } from "./useTodoBoard";
 
 const TodoBoard: FC = () => {
+  const initializeColumns = useTodoBoard((state) => state.initializeColumns);
   const columns = useTodoBoard((state) => state.columns);
   const handleDragEnd = useTodoBoard((state) => state.handleDragEnd);
   const handleDragOver = useTodoBoard((state) => state.handleDragOver);
+
+  useEffect(() => {
+    initializeColumns();
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
