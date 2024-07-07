@@ -28,6 +28,7 @@ const CardDialog: FC<CardDialogProps> = ({ open, onClose, onSave, initialTitle }
     formState: { isValid, errors },
   } = useForm<FormValues>();
 
+  // TODO >> useEffect使わないようにする
   useEffect(() => {
     reset({ title: initialTitle });
   }, [initialTitle, reset]);

@@ -1,4 +1,3 @@
-import { ColumnType } from "@/types/todo";
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import { AddTask } from "@mui/icons-material";
@@ -7,9 +6,16 @@ import { FC, useCallback } from "react";
 import Card from "./Card";
 import CardDialog from "./CardDialog";
 import { useTodoBoard } from "./useTodoBoard";
+import { Task, Status } from "@/Apis/tasks";
 
-const Column: FC<ColumnType> = (column) => {
-  const { id, title, cards, showAddTask = false, showEditTask = false } = column;
+export type ColumnProps = {
+  id: Status;
+  title: string;
+  tasks: Task[];
+};
+
+const Column: FC<ColumnProps> = (props) => {
+  const { id, title, tasks } = props;
   const { setNodeRef } = useDroppable({ id: id });
   const {
     addCard,
@@ -24,10 +30,10 @@ const Column: FC<ColumnType> = (column) => {
     setDialogMode,
   } = useTodoBoard();
 
-  const handleDialogOpen = (columnId: string) => {
+  const handleDialogOpen = (columnId: Status) => {
     setDialogMode("add");
     setCurrentColumnId(columnId);
-    setCurrentCard({ id: "", title: "" });
+    setCurrentCard({ title: "", status: id });
     setDialogOpen(true);
   };
 
@@ -40,7 +46,7 @@ const Column: FC<ColumnType> = (column) => {
       if (dialogMode === "add") {
         addCard(currentColumnId, title);
       } else if (dialogMode === "edit") {
-        editCard({ id: currentCard.id, title: title });
+        editCard((currentCard as Task).id, title, currentColumnId);
       }
       handleDialogClose();
     },
@@ -48,7 +54,7 @@ const Column: FC<ColumnType> = (column) => {
   );
 
   return (
-    <SortableContext id={id} items={cards} strategy={rectSortingStrategy}>
+    <SortableContext id={id} items={tasks} strategy={rectSortingStrategy}>
       <Box
         ref={setNodeRef}
         sx={{
@@ -77,19 +83,13 @@ const Column: FC<ColumnType> = (column) => {
           >
             {title}
           </Typography>
-          {showAddTask && (
-            <Button
-              variant="contained"
-              onClick={() => handleDialogOpen(id)}
-              sx={{ padding: "3px" }}
-            >
-              <AddTask />
-            </Button>
-          )}
+          <Button variant="contained" onClick={() => handleDialogOpen(id)} sx={{ padding: "3px" }}>
+            <AddTask />
+          </Button>
         </Box>
-        {cards.map((card) => (
-          <Box key={card.id} sx={{ display: "flex", alignItems: "center", padding: "4px" }}>
-            <Card {...{ ...card, showEditTask }} />
+        {tasks.map((task) => (
+          <Box key={task.id} sx={{ display: "flex", alignItems: "center", padding: "4px" }}>
+            <Card {...task} />
           </Box>
         ))}
       </Box>

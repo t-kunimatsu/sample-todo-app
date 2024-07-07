@@ -1,4 +1,3 @@
-import { CardType } from "@/types/todo";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
@@ -6,13 +5,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import { Box, IconButton } from "@mui/material";
 import { FC } from "react";
 import { useTodoBoard } from "./useTodoBoard";
+import { Task } from "@/Apis/tasks";
 
-type CardProps = CardType & {
-  showEditTask?: boolean;
-};
-
-const Card: FC<CardProps> = (props) => {
-  const { id, title, showEditTask } = props;
+const Card: FC<Task> = (task) => {
+  const { id, title } = task;
   const { attributes, listeners, setNodeRef, transform, isDragging, setActivatorNodeRef } =
     useSortable({
       id: id,
@@ -20,9 +16,9 @@ const Card: FC<CardProps> = (props) => {
 
   const { setCurrentCard, setDialogOpen, setDialogMode } = useTodoBoard();
 
-  const handleDialogOpen = (card: CardType) => {
+  const handleDialogOpen = (task: Task) => {
     setDialogMode("edit");
-    setCurrentCard(card);
+    setCurrentCard(task);
     setDialogOpen(true);
   };
 
@@ -37,7 +33,7 @@ const Card: FC<CardProps> = (props) => {
 
   return (
     <div ref={setNodeRef} style={style}>
-      <div id={id}>
+      <div id={id.toString()}>
         <Box
           sx={{
             border: "1px solid gray",
@@ -71,11 +67,9 @@ const Card: FC<CardProps> = (props) => {
             }}
           >
             <Box sx={{ whiteSpace: "pre-wrap" }}>{title}</Box>
-            {/* {showEditTask && ( */}
-            <IconButton onClick={() => handleDialogOpen({ id: id, title: title })}>
+            <IconButton onClick={() => handleDialogOpen(task)}>
               <EditIcon />
             </IconButton>
-            {/* )} */}
           </Box>
         </Box>
       </div>
