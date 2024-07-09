@@ -2,11 +2,11 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
 import { AddTask } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
-import { FC, useCallback } from "react";
 import Card from "./Card";
 import CardDialog from "./CardDialog";
 import { useTodoBoard } from "./useTodoBoard";
 import { Task, Status } from "@/Apis/tasks";
+import { useCallback } from "react";
 
 export type ColumnProps = {
   id: Status;
@@ -14,7 +14,7 @@ export type ColumnProps = {
   tasks: Task[];
 };
 
-const Column: FC<ColumnProps> = (props) => {
+const Column: React.FC<ColumnProps> = (props) => {
   const { id, title, tasks } = props;
   const { setNodeRef } = useDroppable({ id: id });
   const {

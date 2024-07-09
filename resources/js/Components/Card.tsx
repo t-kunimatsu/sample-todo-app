@@ -3,11 +3,10 @@ import { CSS } from "@dnd-kit/utilities";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import EditIcon from "@mui/icons-material/Edit";
 import { Box, IconButton } from "@mui/material";
-import { FC } from "react";
 import { useTodoBoard } from "./useTodoBoard";
 import { Task } from "@/Apis/tasks";
 
-const Card: FC<Task> = (task) => {
+const Card: React.FC<Task> = (task) => {
   const { id, title } = task;
   const { attributes, listeners, setNodeRef, transform, isDragging, setActivatorNodeRef } =
     useSortable({
@@ -28,7 +27,7 @@ const Card: FC<Task> = (task) => {
     opacity: 1,
     color: "#333",
     background: "white",
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
   };
 
   return (

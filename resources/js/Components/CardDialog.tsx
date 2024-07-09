@@ -6,7 +6,7 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { FC, useEffect } from "react";
+import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 type CardDialogProps = {
@@ -20,7 +20,7 @@ type FormValues = {
   title: string;
 };
 
-const CardDialog: FC<CardDialogProps> = ({ open, onClose, onSave, initialTitle }) => {
+const CardDialog: React.FC<CardDialogProps> = ({ open, onClose, onSave, initialTitle }) => {
   const {
     register,
     handleSubmit,
@@ -28,7 +28,7 @@ const CardDialog: FC<CardDialogProps> = ({ open, onClose, onSave, initialTitle }
     formState: { isValid, errors },
   } = useForm<FormValues>();
 
-  // TODO >> useEffect使わないようにする
+  // TODO >> useEffect使わないようにしたいが、resetを使う以外の手はないので、複雑になる可能性大
   useEffect(() => {
     reset({ title: initialTitle });
   }, [initialTitle, reset]);
