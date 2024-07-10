@@ -16,20 +16,10 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  todo:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/TaskResponse"
-                  doing:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/TaskResponse"
-                  done:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/TaskResponse"
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskResponse"
+
     post:
       summary: タスク1件作成
       description: タスクを1件作成します

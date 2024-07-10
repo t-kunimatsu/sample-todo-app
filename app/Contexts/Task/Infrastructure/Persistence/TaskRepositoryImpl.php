@@ -57,7 +57,7 @@ class TaskRepositoryImpl implements TaskRepository
      */
     public function all(): Collection
     {
-        return TaskModel::query()->orderBy('order')->get()->map(
+        return TaskModel::query()->orderBy('order')->orderBy('id')->get()->map(
             fn ($model) => $this->convertToTask($model)
         );
     }

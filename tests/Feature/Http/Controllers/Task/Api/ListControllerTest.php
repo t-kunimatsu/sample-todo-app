@@ -34,11 +34,7 @@ class ListControllerTest extends TestCase
      */
     public function test_normal_case_without_record(): void
     {
-        $expected = [
-            'todo' => [],
-            'doing' => [],
-            'done' => [],
-        ];
+        $expected = [];
         $response = $this->get('/api/v1/tasks');
         $response->assertStatus(200);
         $this->assertEquals($expected, $response->json());
@@ -52,41 +48,35 @@ class ListControllerTest extends TestCase
         return [
             'normal_case' => [
                 'expected' => [
-                    'todo' => [
-                        [
-                            'id' => 6,
-                            'title' => 'title6',
-                            'status' => 'todo',
-                        ],
-                        [
-                            'id' => 7,
-                            'title' => 'title7',
-                            'status' => 'todo',
-                        ],
-                        [
-                            'id' => 5,
-                            'title' => 'title5',
-                            'status' => 'todo',
-                        ],
+                    [
+                        'id' => 1,
+                        'title' => 'title1',
+                        'status' => 'done',
                     ],
-                    'doing' => [
-                        [
-                            'id' => 4,
-                            'title' => 'title4',
-                            'status' => 'doing',
-                        ],
-                        [
-                            'id' => 3,
-                            'title' => 'title3',
-                            'status' => 'doing',
-                        ],
+                    [
+                        'id' => 3,
+                        'title' => 'title3',
+                        'status' => 'doing',
                     ],
-                    'done' => [
-                        [
-                            'id' => 1,
-                            'title' => 'title1',
-                            'status' => 'done',
-                        ],
+                    [
+                        'id' => 4,
+                        'title' => 'title4',
+                        'status' => 'doing',
+                    ],
+                    [
+                        'id' => 5,
+                        'title' => 'title5',
+                        'status' => 'todo',
+                    ],
+                    [
+                        'id' => 7,
+                        'title' => 'title7',
+                        'status' => 'todo',
+                    ],
+                    [
+                        'id' => 6,
+                        'title' => 'title6',
+                        'status' => 'todo',
                     ],
                 ],
             ],
@@ -97,11 +87,11 @@ class ListControllerTest extends TestCase
     {
         Task::query()->create(['id' => 1, 'title' => 'title1', 'status' => 'done', 'order' => 1]);
         Task::query()->create(['id' => 2, 'title' => 'title2', 'status' => 'done', 'order' => 1]);
-        Task::query()->create(['id' => 3, 'title' => 'title3', 'status' => 'doing', 'order' => 2]);
+        Task::query()->create(['id' => 3, 'title' => 'title3', 'status' => 'doing', 'order' => 1]);
         Task::query()->create(['id' => 4, 'title' => 'title4', 'status' => 'doing', 'order' => 1]);
         Task::query()->create(['id' => 5, 'title' => 'title5', 'status' => 'todo', 'order' => 3]);
-        Task::query()->create(['id' => 6, 'title' => 'title6', 'status' => 'todo', 'order' => 1]);
-        Task::query()->create(['id' => 7, 'title' => 'title7', 'status' => 'todo', 'order' => 2]);
+        Task::query()->create(['id' => 6, 'title' => 'title6', 'status' => 'todo', 'order' => 5]);
+        Task::query()->create(['id' => 7, 'title' => 'title7', 'status' => 'todo', 'order' => 4]);
 
         Task::query()->where('id', 2)->delete();
     }
