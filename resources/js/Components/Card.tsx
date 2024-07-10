@@ -13,11 +13,12 @@ const Card: React.FC<Task> = (task) => {
       id: id,
     });
 
-  const { setCurrentCard, setDialogOpen, setDialogMode } = useTodoBoard();
+  const { setCurrentCard, setDialogOpen, setDialogMode, resetCardDialogForm } = useTodoBoard();
 
   const handleDialogOpen = (task: Task) => {
     setDialogMode("edit");
     setCurrentCard(task);
+    resetCardDialogForm && resetCardDialogForm({ title: task.title });
     setDialogOpen(true);
   };
 

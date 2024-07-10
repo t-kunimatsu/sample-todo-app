@@ -1,5 +1,5 @@
 import { useDroppable } from "@dnd-kit/core";
-import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { AddTask } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import Card from "./Card";
@@ -12,10 +12,11 @@ export type ColumnProps = {
   id: Status;
   title: string;
   tasks: Task[];
+  showAddTask: boolean;
 };
 
 const Column: React.FC<ColumnProps> = (props) => {
-  const { id, title, tasks } = props;
+  const { id, title, tasks, showAddTask } = props;
   const { setNodeRef } = useDroppable({ id: id });
   const {
     addCard,
@@ -28,33 +29,43 @@ const Column: React.FC<ColumnProps> = (props) => {
     setDialogOpen,
     dialogMode,
     setDialogMode,
+    resetCardDialogForm,
   } = useTodoBoard();
 
   const handleDialogOpen = (columnId: Status) => {
     setDialogMode("add");
     setCurrentColumnId(columnId);
     setCurrentCard({ title: "", status: id });
+    resetCardDialogForm && resetCardDialogForm({ title: "" });
     setDialogOpen(true);
   };
 
+  // TODO >> ダイアログ側で直接呼び出せばよい
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
 
-  const handleSaveCard = useCallback(
+  const saveCard = useCallback(
     (title: string) => {
       if (dialogMode === "add") {
         addCard(currentColumnId, title);
-      } else if (dialogMode === "edit") {
-        editCard((currentCard as Task).id, title, currentColumnId);
+        return;
       }
+      editCard((currentCard as Task).id, title, currentColumnId);
+    },
+    [dialogMode, currentColumnId, currentCard, addCard, editCard]
+  );
+
+  const handleSaveCard = useCallback(
+    (title: string) => {
+      saveCard(title);
       handleDialogClose();
     },
-    [dialogMode, currentColumnId, currentCard, addCard, editCard, handleDialogClose]
+    [saveCard, handleDialogClose]
   );
 
   return (
-    <SortableContext id={id} items={tasks} strategy={rectSortingStrategy}>
+    <SortableContext id={id} items={tasks} strategy={verticalListSortingStrategy}>
       <Box
         ref={setNodeRef}
         sx={{
@@ -83,9 +94,15 @@ const Column: React.FC<ColumnProps> = (props) => {
           >
             {title}
           </Typography>
-          <Button variant="contained" onClick={() => handleDialogOpen(id)} sx={{ padding: "3px" }}>
-            <AddTask />
-          </Button>
+          {showAddTask && (
+            <Button
+              variant="contained"
+              onClick={() => handleDialogOpen(id)}
+              sx={{ padding: "3px" }}
+            >
+              <AddTask />
+            </Button>
+          )}
         </Box>
         {tasks.map((task) => (
           <Box key={task.id} sx={{ display: "flex", alignItems: "center", padding: "4px" }}>
@@ -93,12 +110,8 @@ const Column: React.FC<ColumnProps> = (props) => {
           </Box>
         ))}
       </Box>
-      <CardDialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        onSave={handleSaveCard}
-        initialTitle={currentCard.title}
-      />
+      {/* TODO >> カラムごとに持つ必要ないかも・・・ */}
+      <CardDialog open={dialogOpen} onClose={handleDialogClose} onSave={handleSaveCard} />
     </SortableContext>
   );
 };

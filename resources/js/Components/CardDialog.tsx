@@ -6,21 +6,26 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
-import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useTodoBoard } from "./useTodoBoard";
+import { useMemo } from "react";
+
+export type DialogMode = "add" | "edit";
 
 type CardDialogProps = {
   open: boolean;
   onClose: () => void;
   onSave: (title: string) => void;
-  initialTitle: string;
 };
 
-type FormValues = {
+export type FormValues = {
   title: string;
 };
 
-const CardDialog: React.FC<CardDialogProps> = ({ open, onClose, onSave, initialTitle }) => {
+const CardDialog: React.FC<CardDialogProps> = ({ open, onClose, onSave }) => {
+  const dialogMode = useTodoBoard((state) => state.dialogMode);
+  const setResetCardDialogForm = useTodoBoard((state) => state.setResetCardDialogForm);
+
   const {
     register,
     handleSubmit,
@@ -28,24 +33,19 @@ const CardDialog: React.FC<CardDialogProps> = ({ open, onClose, onSave, initialT
     formState: { isValid, errors },
   } = useForm<FormValues>();
 
-  // TODO >> useEffect使わないようにしたいが、resetを使う以外の手はないので、複雑になる可能性大
-  useEffect(() => {
-    reset({ title: initialTitle });
-  }, [initialTitle, reset]);
+  useMemo(() => setResetCardDialogForm(reset), [setResetCardDialogForm, reset]);
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     onSave(data.title);
-    reset({ title: "" });
   };
 
   const handleClose = () => {
     onClose();
-    reset({ title: "" });
   };
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth>
-      <DialogTitle>{initialTitle ? "編集" : "追加"}</DialogTitle>
+      <DialogTitle>{dialogMode === "add" ? "追加" : "編集"}</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField

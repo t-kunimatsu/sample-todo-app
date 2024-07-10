@@ -1,10 +1,10 @@
-import { Task, Tasks, Status, postTask, NewTask, patchTask } from "@/Apis/tasks";
+import { Task, Status, postTask, NewTask, patchTask } from "@/Apis/tasks";
 import { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { create } from "zustand";
 import { ColumnProps } from "./Column";
-
-export type DialogMode = "add" | "edit";
+import { DialogMode, FormValues } from "./CardDialog";
+import { UseFormReset } from "react-hook-form";
 
 type BoardState = {
   columns: ColumnProps[];
@@ -21,7 +21,9 @@ type BoardState = {
   setDialogOpen: (open: boolean) => void;
   dialogMode: DialogMode;
   setDialogMode: (mode: DialogMode) => void;
-  initializeColumns: (tasks: Tasks) => void;
+  resetCardDialogForm: UseFormReset<FormValues> | undefined;
+  setResetCardDialogForm: (reset: UseFormReset<FormValues>) => void;
+  initializeColumns: (tasks: Task[]) => void;
 };
 
 export const useTodoBoard = create<BoardState>((set, get) => {
@@ -55,10 +57,15 @@ export const useTodoBoard = create<BoardState>((set, get) => {
   };
 
   const addCard = async (columnId: Status, title: string) => {
-    const newTask = await postTask({
+    const result = await postTask({
       title: title,
       status: columnId,
     });
+    if (!result.task) {
+      // TODO >> トースト表示する
+      return;
+    }
+    const newTask = result.task;
     set((state) => {
       const column = state.columns.find((column) => column.id === columnId);
       if (!column) return state;
@@ -76,7 +83,11 @@ export const useTodoBoard = create<BoardState>((set, get) => {
   };
 
   const editCard = async (id: number, title: string, status: Status) => {
-    await patchTask({ id: id, title: title, status: status });
+    const result = await patchTask({ id: id, title: title, status: status });
+    if (!result.task) {
+      // TODO >> トースト表示する
+      return;
+    }
     set((state) => {
       return {
         columns: state.columns.map((column) => {
@@ -142,30 +153,29 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     updateCardPosition(activeColumn.id, activeIndex, overIndex);
   };
 
-  // TODO >> APIからはフラットで返して、ここで整形する
-  const initializeColumns = (tasks: Tasks) => {
+  const initializeColumns = (tasks: Task[]) => {
     set((state) => {
       return {
         columns: [
           {
             id: "todo",
             title: "ToDo",
-            tasks: tasks.todo,
+            tasks: tasks.filter((task) => task.status === "todo"),
             showAddTask: true,
             showEditTask: true,
           },
           {
             id: "doing",
             title: "Doing",
-            tasks: tasks.doing,
+            tasks: tasks.filter((task) => task.status === "doing"),
             showAddTask: true,
             showEditTask: true,
           },
           {
             id: "done",
             title: "Done",
-            tasks: tasks.done,
-            showAddTask: true,
+            tasks: tasks.filter((task) => task.status === "done"),
+            showAddTask: false,
             showEditTask: true,
           },
         ],
@@ -188,6 +198,8 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     setDialogOpen: (open) => set({ dialogOpen: open }),
     dialogMode: "add",
     setDialogMode: (mode) => set({ dialogMode: mode }),
+    resetCardDialogForm: undefined,
+    setResetCardDialogForm: (reset) => set({ resetCardDialogForm: reset }),
     initializeColumns,
   };
 });

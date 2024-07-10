@@ -1,13 +1,7 @@
-import useSWR, { SWRResponse } from "swr";
+import axios, { AxiosError, isAxiosError } from "axios";
+import useSWRImmutable from "swr/immutable";
 
 export type Status = "todo" | "doing" | "done";
-
-// TODO >> これが何か変な感じ。Taskのマップ表現でしかないので型として持つのはおかしい？APIをシンプルな形に戻すか・・・
-export type Tasks = {
-  todo: Task[];
-  doing: Task[];
-  done: Task[];
-};
 
 export type Task = {
   id: number;
@@ -20,42 +14,60 @@ export type NewTask = {
   status: Status;
 };
 
-const fetcher = (url: string): Promise<Tasks> => fetch(url).then((res) => res.json());
+export type ApiResult = {
+  status: number;
+  task?: Task;
+  errors?: string[];
+};
+
+const fetcher = (url: string): Promise<Task[]> => axios(url).then((res) => res.data);
 
 export const useGetTasks = () => {
-  // TODO >> Immutableにする
-  return useSWR("/api/v1/tasks", fetcher);
+  return useSWRImmutable("/api/v1/tasks", fetcher);
 };
 
-// TODO >> SWRで実装する（その前にAPI修正する必要あり）
-export const postTask = async (task: NewTask): Promise<Task> => {
-  const { title, status } = task;
-  const response = await fetch("/api/v1/tasks", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(task),
-  });
-  if (!response.ok) {
-    // TODO >> トースト実装する
-    throw new Error("Failed to add task");
+export const postTask = async (task: NewTask): Promise<ApiResult> => {
+  try {
+    const response = await axios.post("/api/v1/tasks", task);
+    return {
+      status: 200,
+      task: response.data,
+    };
+  } catch (e) {
+    if (isAxiosError(e)) {
+      return {
+        status: e.response?.status ?? 500,
+        errors: e.response?.data.errors,
+      };
+    }
   }
-  return await response.json();
+  return {
+    status: 500,
+    errors: ["予期せぬエラーが発生しました。"],
+  };
 };
 
-export const patchTask = async (task: Task, position?: number): Promise<Task> => {
-  const { id, title, status } = task;
-  const response = await fetch(`/api/v1/tasks/${id}`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ ...task, ...(position && { position }) }),
-  });
-  if (!response.ok) {
-    // TODO >> トースト実装する
-    throw new Error("Failed to update task");
+export const patchTask = async (task: Task, position?: number): Promise<ApiResult> => {
+  const { id } = task;
+  try {
+    const response = await axios.patch(`/api/v1/tasks/${id}`, {
+      ...task,
+      ...(position !== undefined && { position }),
+    });
+    return {
+      status: 200,
+      task: response.data,
+    };
+  } catch (e) {
+    if (isAxiosError(e)) {
+      return {
+        status: e.response?.status ?? 500,
+        errors: e.response?.data.errors,
+      };
+    }
   }
-  return await response.json();
+  return {
+    status: 500,
+    errors: ["予期せぬエラーが発生しました。"],
+  };
 };

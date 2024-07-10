@@ -7,7 +7,6 @@ const Todo: React.FC = () => {
   const { data: tasks, error } = useGetTasks();
   if (error) return <>ERROR...</>;
   if (!tasks) return <>ROADING...</>;
-  // TODO >> ときどき予期せぬタイミングで発火してる。SWRをimmutableにすればよい？
   initializeColumns(tasks);
 
   return <TodoBoard />;
