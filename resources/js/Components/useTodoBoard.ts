@@ -1,38 +1,43 @@
-import { CardType, ColumnType, DialogMode } from "@/types/todo";
+import { Task, Status, postTask, NewTask, patchTask } from "@/Apis/tasks";
 import { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { create } from "zustand";
+import { ColumnProps } from "./Column";
+import { DialogMode, FormValues } from "./CardDialog";
+import { UseFormReset } from "react-hook-form";
 
 type BoardState = {
-  columns: ColumnType[];
-  setColumns: (columns: ColumnType[]) => void;
-  addCard: (columnId: string, newCard: CardType) => void;
-  editCard: (editCard: CardType) => void;
+  columns: ColumnProps[];
+  setColumns: (columns: ColumnProps[]) => void;
+  addCard: (columnId: Status, title: string) => void;
+  editCard: (id: number, title: string, status: Status) => void;
   handleDragOver: (event: DragOverEvent) => void;
   handleDragEnd: (event: DragEndEvent) => void;
-  currentColumnId: string;
-  setCurrentColumnId: (id: string) => void;
-  currentCard: CardType;
-  setCurrentCard: (card: CardType) => void;
+  currentColumnId: Status;
+  setCurrentColumnId: (id: Status) => void;
+  currentCard: Task | NewTask;
+  setCurrentCard: (task: Task | NewTask) => void;
   dialogOpen: boolean;
   setDialogOpen: (open: boolean) => void;
   dialogMode: DialogMode;
   setDialogMode: (mode: DialogMode) => void;
+  resetCardDialogForm: UseFormReset<FormValues> | undefined;
+  setResetCardDialogForm: (reset: UseFormReset<FormValues>) => void;
+  initializeColumns: (tasks: Task[]) => void;
 };
 
 export const useTodoBoard = create<BoardState>((set, get) => {
-  const findColumn = (unique: string | null) => {
+  const findColumn = (id: string | null) => {
     const state = get();
-    if (!unique) return null;
-    if (state.columns.some((column) => column.id === unique)) {
-      return state.columns.find((column) => column.id === unique) ?? null;
+    if (!id) return null;
+    if (state.columns.some((column) => column.id === id)) {
+      return state.columns.find((column) => column.id === id) ?? null;
     }
-    const id = String(unique);
     const itemWithColumnId = state.columns.flatMap((column) => {
       const columnId = column.id;
-      return column.cards.map((card) => ({ itemId: card.id, columnId: columnId }));
+      return column.tasks.map((task) => ({ itemId: task.id, columnId: columnId }));
     });
-    const columnId = itemWithColumnId.find((item) => item.itemId === id)?.columnId;
+    const columnId = itemWithColumnId.find((item) => item.itemId.toString() === id)?.columnId;
     return state.columns.find((column) => column.id === columnId) ?? null;
   };
 
@@ -40,37 +45,55 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     set((state) => {
       const column = state.columns.find((column) => column.id === columnId);
       if (!column) return state;
-
-      const updatedCards = arrayMove(column.cards, fromIndex, toIndex);
+      const updatedCards = arrayMove(column.tasks, fromIndex, toIndex);
+      const card = updatedCards[toIndex];
+      patchTask({ ...card, status: column.id }, toIndex);
       return {
         columns: state.columns.map((column) =>
-          column.id === columnId ? { ...column, cards: updatedCards } : column
+          column.id === columnId ? { ...column, tasks: updatedCards } : column
         ),
       };
     });
   };
 
-  const addCard = (columnId: string, newCard: CardType) => {
+  const addCard = async (columnId: Status, title: string) => {
+    const result = await postTask({
+      title: title,
+      status: columnId,
+    });
+    if (!result.task) {
+      // TODO >> トースト表示する
+      return;
+    }
+    const newTask = result.task;
     set((state) => {
       const column = state.columns.find((column) => column.id === columnId);
       if (!column) return state;
       return {
         columns: state.columns.map((column) =>
-          column.id === columnId ? { ...column, cards: [...column.cards, newCard] } : column
+          column.id === columnId
+            ? {
+                ...column,
+                tasks: [...column.tasks, { ...newTask }],
+              }
+            : column
         ),
       };
     });
   };
 
-  const editCard = (editCard: CardType) => {
+  const editCard = async (id: number, title: string, status: Status) => {
+    const result = await patchTask({ id: id, title: title, status: status });
+    if (!result.task) {
+      // TODO >> トースト表示する
+      return;
+    }
     set((state) => {
       return {
         columns: state.columns.map((column) => {
           return {
             ...column,
-            cards: column.cards.map((card) =>
-              card.id === editCard.id ? { ...card, title: editCard.title } : card
-            ),
+            tasks: column.tasks.map((task) => (task.id === id ? { ...task, title: title } : task)),
           };
         }),
       };
@@ -87,10 +110,10 @@ export const useTodoBoard = create<BoardState>((set, get) => {
       return null;
     }
     set((state) => {
-      const activeItems = activeColumn.cards;
-      const overItems = overColumn.cards;
-      const activeIndex = activeItems.findIndex((i) => i.id === activeId);
-      const overIndex = overItems.findIndex((i) => i.id === overId);
+      const activeItems = activeColumn.tasks;
+      const overItems = overColumn.tasks;
+      const activeIndex = activeItems.findIndex((i) => i.id.toString() === activeId);
+      const overIndex = overItems.findIndex((i) => i.id.toString() === overId);
       const newIndex = () => {
         const putOnBelowLastItem = overIndex === overItems.length - 1 && delta.y > 0;
         const modifier = putOnBelowLastItem ? 1 : 0;
@@ -99,11 +122,11 @@ export const useTodoBoard = create<BoardState>((set, get) => {
       return {
         columns: state.columns.map((column) => {
           if (column.id === activeColumn.id) {
-            column.cards = activeItems.filter((item) => item.id !== activeId);
+            column.tasks = activeItems.filter((item) => item.id.toString() !== activeId);
             return column;
           }
           if (column.id === overColumn.id) {
-            column.cards = [
+            column.tasks = [
               ...overItems.slice(0, newIndex()),
               activeItems[activeIndex],
               ...overItems.slice(newIndex(), overItems.length),
@@ -125,65 +148,58 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     if (!activeColumn || !overColumn || activeColumn !== overColumn) {
       return null;
     }
-    const activeIndex = activeColumn.cards.findIndex((card) => card.id === activeId);
-    const overIndex = overColumn.cards.findIndex((card) => card.id === overId);
-    if (activeIndex !== overIndex) {
-      updateCardPosition(activeColumn.id, activeIndex, overIndex);
-    }
+    const activeIndex = activeColumn.tasks.findIndex((task) => task.id.toString() === activeId);
+    const overIndex = overColumn.tasks.findIndex((task) => task.id.toString() === overId);
+    updateCardPosition(activeColumn.id, activeIndex, overIndex);
+  };
+
+  const initializeColumns = (tasks: Task[]) => {
+    set((state) => {
+      return {
+        columns: [
+          {
+            id: "todo",
+            title: "ToDo",
+            tasks: tasks.filter((task) => task.status === "todo"),
+            showAddTask: true,
+            showEditTask: true,
+          },
+          {
+            id: "doing",
+            title: "Doing",
+            tasks: tasks.filter((task) => task.status === "doing"),
+            showAddTask: true,
+            showEditTask: true,
+          },
+          {
+            id: "done",
+            title: "Done",
+            tasks: tasks.filter((task) => task.status === "done"),
+            showAddTask: false,
+            showEditTask: true,
+          },
+        ],
+      };
+    });
   };
 
   return {
-    columns: [
-      {
-        id: "todo",
-        title: "ToDo",
-        cards: [
-          {
-            id: "Card1",
-            title: "Card1",
-          },
-          {
-            id: "Card2",
-            title: "Card2",
-          },
-        ],
-        showAddTask: true,
-        showEditTask: true,
-      },
-      {
-        id: "doing",
-        title: "Doing",
-        cards: [
-          {
-            id: "Card3",
-            title: "Card3",
-          },
-          {
-            id: "Card4",
-            title: "Card4",
-          },
-        ],
-        showAddTask: true,
-        showEditTask: true,
-      },
-      {
-        id: "done",
-        title: "Done",
-        cards: [],
-      },
-    ],
+    columns: [],
     setColumns: (columns) => set({ columns }),
     addCard,
     editCard,
     handleDragOver,
     handleDragEnd,
-    currentColumnId: "",
+    currentColumnId: "todo",
     setCurrentColumnId: (id) => set({ currentColumnId: id }),
-    currentCard: { id: "", title: "" },
-    setCurrentCard: (card) => set({ currentCard: card }),
+    currentCard: { title: "", status: "todo" },
+    setCurrentCard: (task) => set({ currentCard: task }),
     dialogOpen: false,
     setDialogOpen: (open) => set({ dialogOpen: open }),
     dialogMode: "add",
     setDialogMode: (mode) => set({ dialogMode: mode }),
+    resetCardDialogForm: undefined,
+    setResetCardDialogForm: (reset) => set({ resetCardDialogForm: reset }),
+    initializeColumns,
   };
 });

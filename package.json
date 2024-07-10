@@ -16,9 +16,7 @@
         "@types/react-dom": "^18.0.10",
         "@vitejs/plugin-react": "^4.2.0",
         "autoprefixer": "^10.4.12",
-        "axios": "^1.6.4",
-        "eslint": "^9.5.0",
-        "eslint-plugin-react": "^7.34.3",
+        "axios": "^1.7.2",
         "globals": "^15.6.0",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.31",
@@ -40,6 +38,10 @@
         "@mui/x-date-pickers": "^7.6.2",
         "date-fns": "^2.30.0",
         "react-hook-form": "^7.52.0",
+        "swr": "^2.2.5",
         "zustand": "^4.5.2"
+    },
+    "volta": {
+        "node": "22.2.0"
     }
 }

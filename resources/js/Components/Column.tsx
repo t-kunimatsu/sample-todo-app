@@ -1,15 +1,22 @@
-import { ColumnType } from "@/types/todo";
 import { useDroppable } from "@dnd-kit/core";
-import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { AddTask } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
-import { FC, useCallback } from "react";
 import Card from "./Card";
 import CardDialog from "./CardDialog";
 import { useTodoBoard } from "./useTodoBoard";
+import { Task, Status } from "@/Apis/tasks";
+import { useCallback } from "react";
 
-const Column: FC<ColumnType> = (column) => {
-  const { id, title, cards, showAddTask = false, showEditTask = false } = column;
+export type ColumnProps = {
+  id: Status;
+  title: string;
+  tasks: Task[];
+  showAddTask: boolean;
+};
+
+const Column: React.FC<ColumnProps> = (props) => {
+  const { id, title, tasks, showAddTask } = props;
   const { setNodeRef } = useDroppable({ id: id });
   const {
     addCard,
@@ -22,35 +29,43 @@ const Column: FC<ColumnType> = (column) => {
     setDialogOpen,
     dialogMode,
     setDialogMode,
+    resetCardDialogForm,
   } = useTodoBoard();
 
-  const handleDialogOpen = (columnId: string) => {
+  const handleDialogOpen = (columnId: Status) => {
     setDialogMode("add");
     setCurrentColumnId(columnId);
-    setCurrentCard({ id: "", title: "" });
+    setCurrentCard({ title: "", status: id });
+    resetCardDialogForm && resetCardDialogForm({ title: "" });
     setDialogOpen(true);
   };
 
+  // TODO >> ダイアログ側で直接呼び出せばよい
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
 
-  const handleSaveCard = useCallback(
+  const saveCard = useCallback(
     (title: string) => {
       if (dialogMode === "add") {
-        // TODO >> idはAPIの戻り値
-        const newCard = { id: `Card${Date.now()}`, title: title };
-        addCard(currentColumnId, newCard);
-      } else if (dialogMode === "edit") {
-        editCard({ id: currentCard.id, title: title });
+        addCard(currentColumnId, title);
+        return;
       }
+      editCard((currentCard as Task).id, title, currentColumnId);
+    },
+    [dialogMode, currentColumnId, currentCard, addCard, editCard]
+  );
+
+  const handleSaveCard = useCallback(
+    (title: string) => {
+      saveCard(title);
       handleDialogClose();
     },
-    [dialogMode, currentColumnId, currentCard, addCard, editCard, handleDialogClose]
+    [saveCard, handleDialogClose]
   );
 
   return (
-    <SortableContext id={id} items={cards} strategy={rectSortingStrategy}>
+    <SortableContext id={id} items={tasks} strategy={verticalListSortingStrategy}>
       <Box
         ref={setNodeRef}
         sx={{
@@ -89,18 +104,14 @@ const Column: FC<ColumnType> = (column) => {
             </Button>
           )}
         </Box>
-        {cards.map((card) => (
-          <Box key={card.id} sx={{ display: "flex", alignItems: "center", padding: "4px" }}>
-            <Card {...{ ...card, showEditTask }} />
+        {tasks.map((task) => (
+          <Box key={task.id} sx={{ display: "flex", alignItems: "center", padding: "4px" }}>
+            <Card {...task} />
           </Box>
         ))}
       </Box>
-      <CardDialog
-        open={dialogOpen}
-        onClose={handleDialogClose}
-        onSave={handleSaveCard}
-        initialTitle={currentCard.title}
-      />
+      {/* TODO >> カラムごとに持つ必要ないかも・・・ */}
+      <CardDialog open={dialogOpen} onClose={handleDialogClose} onSave={handleSaveCard} />
     </SortableContext>
   );
 };

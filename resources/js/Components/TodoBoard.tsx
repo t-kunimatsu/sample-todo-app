@@ -9,10 +9,9 @@ import {
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { Box } from "@mui/material";
-import { FC } from "react";
 import { useTodoBoard } from "./useTodoBoard";
 
-const TodoBoard: FC = () => {
+const TodoBoard: React.FC = () => {
   const columns = useTodoBoard((state) => state.columns);
   const handleDragEnd = useTodoBoard((state) => state.handleDragEnd);
   const handleDragOver = useTodoBoard((state) => state.handleDragOver);
