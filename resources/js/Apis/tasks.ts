@@ -50,13 +50,32 @@ export const postTask = async (task: NewTask): Promise<ApiResult> => {
 export const patchTask = async (task: Task, position?: number): Promise<ApiResult> => {
   const { id } = task;
   try {
-    const response = await axios.patch(`/api/v1/tasks/${id}`, {
+    await axios.patch(`/api/v1/tasks/${id}`, {
       ...task,
       ...(position !== undefined && { position }),
     });
     return {
       status: 200,
-      task: response.data,
+    };
+  } catch (e) {
+    if (isAxiosError(e)) {
+      return {
+        status: e.response?.status ?? 500,
+        errors: e.response?.data.errors,
+      };
+    }
+  }
+  return {
+    status: 500,
+    errors: ["予期せぬエラーが発生しました。"],
+  };
+};
+
+export const deleteTask = async (id: number): Promise<ApiResult> => {
+  try {
+    await axios.delete(`/api/v1/tasks/${id}`);
+    return {
+      status: 200,
     };
   } catch (e) {
     if (isAxiosError(e)) {

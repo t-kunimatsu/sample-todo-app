@@ -1,4 +1,4 @@
-import { Task, Status, postTask, NewTask, patchTask } from "@/Apis/tasks";
+import { Task, Status, postTask, NewTask, patchTask, deleteTask } from "@/Apis/tasks";
 import { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { create } from "zustand";
@@ -11,6 +11,7 @@ type BoardState = {
   setColumns: (columns: ColumnProps[]) => void;
   addCard: (columnId: Status, title: string) => void;
   editCard: (id: number, title: string, status: Status) => void;
+  deleteCard: (id: number) => void;
   handleDragOver: (event: DragOverEvent) => void;
   handleDragEnd: (event: DragEndEvent) => void;
   currentColumnId: Status;
@@ -41,19 +42,23 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     return state.columns.find((column) => column.id === columnId) ?? null;
   };
 
-  const updateCardPosition = (columnId: string, fromIndex: number, toIndex: number) => {
-    set((state) => {
-      const column = state.columns.find((column) => column.id === columnId);
-      if (!column) return state;
-      const updatedCards = arrayMove(column.tasks, fromIndex, toIndex);
-      const card = updatedCards[toIndex];
-      patchTask({ ...card, status: column.id }, toIndex);
-      return {
-        columns: state.columns.map((column) =>
-          column.id === columnId ? { ...column, tasks: updatedCards } : column
-        ),
-      };
-    });
+  const updateCardPosition = async (columnId: string, fromIndex: number, toIndex: number) => {
+    const state = get();
+    const column = state.columns.find((column) => column.id === columnId);
+    if (!column) return state;
+    const updatedCards = arrayMove(column.tasks, fromIndex, toIndex);
+    const card = updatedCards[toIndex];
+    const result = await patchTask({ ...card, status: column.id }, toIndex);
+    if (result.status !== 200) {
+      // TODO >> トースト表示する
+      // すでにカラムを移動している場合は戻すの大変なので、並び順もフロントには反映してしまう
+      // TODO >> 自動リカバリの仕組みが必要
+    }
+    set((state) => ({
+      columns: state.columns.map((column) =>
+        column.id === columnId ? { ...column, tasks: updatedCards } : column
+      ),
+    }));
   };
 
   const addCard = async (columnId: Status, title: string) => {
@@ -84,8 +89,10 @@ export const useTodoBoard = create<BoardState>((set, get) => {
 
   const editCard = async (id: number, title: string, status: Status) => {
     const result = await patchTask({ id: id, title: title, status: status });
-    if (!result.task) {
+    console.log(">>>>" + JSON.stringify(result, null, 2));
+    if (result.status !== 200) {
       // TODO >> トースト表示する
+      // TODO >> フロントには反映してしまう？（自動リカバリできるようにしたい）
       return;
     }
     set((state) => {
@@ -94,6 +101,24 @@ export const useTodoBoard = create<BoardState>((set, get) => {
           return {
             ...column,
             tasks: column.tasks.map((task) => (task.id === id ? { ...task, title: title } : task)),
+          };
+        }),
+      };
+    });
+  };
+
+  const deleteCard = async (id: number) => {
+    const result = await deleteTask(id);
+    if (result.status !== 200 && result.status !== 404) {
+      // TODO >> トースト表示する
+      return;
+    }
+    set((state) => {
+      return {
+        columns: state.columns.map((column) => {
+          return {
+            ...column,
+            tasks: column.tasks.filter((task) => task.id !== id),
           };
         }),
       };
@@ -188,6 +213,7 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     setColumns: (columns) => set({ columns }),
     addCard,
     editCard,
+    deleteCard,
     handleDragOver,
     handleDragEnd,
     currentColumnId: "todo",
