@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Task\Api\DeleteController;
 use App\Http\Controllers\Task\Api\ListController;
 use App\Http\Controllers\Task\Api\StoreController;
 use App\Http\Controllers\Task\Api\UpdateController;
@@ -10,5 +11,6 @@ Route::prefix('v1')->group(function () {
         Route::get('/', [ListController::class, '__invoke']);
         Route::post('/', [StoreController::class, '__invoke']);
         Route::patch('/{id}', [UpdateController::class, '__invoke']);
+        Route::delete('/{id}', [DeleteController::class, '__invoke']);
     });
 });

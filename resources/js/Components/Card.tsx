@@ -2,6 +2,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import DragHandleIcon from "@mui/icons-material/DragHandle";
 import EditIcon from "@mui/icons-material/Edit";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Box, IconButton } from "@mui/material";
 import { useTodoBoard } from "./useTodoBoard";
 import { Task } from "@/Apis/tasks";
@@ -13,7 +14,8 @@ const Card: React.FC<Task> = (task) => {
       id: id,
     });
 
-  const { setCurrentCard, setDialogOpen, setDialogMode, resetCardDialogForm } = useTodoBoard();
+  const { setCurrentCard, setDialogOpen, setDialogMode, resetCardDialogForm, deleteCard } =
+    useTodoBoard();
 
   const handleDialogOpen = (task: Task) => {
     setDialogMode("edit");
@@ -21,6 +23,8 @@ const Card: React.FC<Task> = (task) => {
     resetCardDialogForm && resetCardDialogForm({ title: task.title });
     setDialogOpen(true);
   };
+
+  const handleDeleteCard = (task: Task) => deleteCard(task.id);
 
   const style = {
     width: "100%",
@@ -67,8 +71,18 @@ const Card: React.FC<Task> = (task) => {
             }}
           >
             <Box sx={{ whiteSpace: "pre-wrap" }}>{title}</Box>
-            <IconButton onClick={() => handleDialogOpen(task)}>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <IconButton onClick={() => handleDialogOpen(task)} sx={{ padding: "2px" }}>
               <EditIcon />
+            </IconButton>
+            <IconButton onClick={() => handleDeleteCard(task)} sx={{ padding: "2px" }}>
+              <DeleteOutlineIcon />
             </IconButton>
           </Box>
         </Box>

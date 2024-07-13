@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { AddTask } from "@mui/icons-material";
+import { AddCircleOutline } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import Card from "./Card";
 import CardDialog from "./CardDialog";
@@ -40,7 +40,7 @@ const Column: React.FC<ColumnProps> = (props) => {
     setDialogOpen(true);
   };
 
-  // TODO >> ダイアログ側で直接呼び出せばよい
+  // TODO >> ダイアログ側で直接呼び出せばよい（というか閉じるだけで他に処理がないなら実装自体不要）
   const handleDialogClose = () => {
     setDialogOpen(false);
   };
@@ -81,8 +81,9 @@ const Column: React.FC<ColumnProps> = (props) => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            height: "24px",
             padding: "2px",
-            mb: 2,
+            marginBottom: "16px",
           }}
         >
           <Typography
@@ -98,9 +99,9 @@ const Column: React.FC<ColumnProps> = (props) => {
             <Button
               variant="contained"
               onClick={() => handleDialogOpen(id)}
-              sx={{ padding: "3px" }}
+              sx={{ padding: "4px", margin: "4px", minWidth: "32px" }}
             >
-              <AddTask />
+              <AddCircleOutline />
             </Button>
           )}
         </Box>
@@ -111,6 +112,7 @@ const Column: React.FC<ColumnProps> = (props) => {
         ))}
       </Box>
       {/* TODO >> カラムごとに持つ必要ないかも・・・ */}
+      {/* TODO >> 逆にkeyを指定してそれぞれに持たせる形にすれば、ごちゃごちゃした制御を削除できるはず・・・ */}
       <CardDialog open={dialogOpen} onClose={handleDialogClose} onSave={handleSaveCard} />
     </SortableContext>
   );
