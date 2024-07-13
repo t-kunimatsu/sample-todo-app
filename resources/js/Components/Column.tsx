@@ -111,6 +111,7 @@ const Column: React.FC<ColumnProps> = (props) => {
         ))}
       </Box>
       {/* TODO >> カラムごとに持つ必要ないかも・・・ */}
+      {/* TODO >> 逆にkeyを指定してそれぞれに持たせる形にすれば、ごちゃごちゃした制御を削除できるはず・・・ */}
       <CardDialog open={dialogOpen} onClose={handleDialogClose} onSave={handleSaveCard} />
     </SortableContext>
   );
