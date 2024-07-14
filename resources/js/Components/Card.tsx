@@ -6,6 +6,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Box, IconButton } from "@mui/material";
 import { useTodoBoard } from "./useTodoBoard";
 import { Task } from "@/Apis/tasks";
+import { useShallow } from "zustand/react/shallow";
 
 const Card: React.FC<Task> = (task) => {
   const { id, title } = task;
@@ -15,7 +16,15 @@ const Card: React.FC<Task> = (task) => {
     });
 
   const { setCurrentCard, setDialogOpen, setDialogMode, resetCardDialogForm, deleteCard } =
-    useTodoBoard();
+    useTodoBoard(
+      useShallow((state) => ({
+        setCurrentCard: state.setCurrentCard,
+        setDialogOpen: state.setDialogOpen,
+        setDialogMode: state.setDialogMode,
+        resetCardDialogForm: state.resetCardDialogForm,
+        deleteCard: state.deleteCard,
+      }))
+    );
 
   const handleDialogOpen = (task: Task) => {
     setDialogMode("edit");

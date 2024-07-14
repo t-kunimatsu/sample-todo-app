@@ -3,10 +3,9 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { AddCircleOutline } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import Card from "./Card";
-import CardDialog from "./CardDialog";
 import { useTodoBoard } from "./useTodoBoard";
 import { Task, Status } from "@/Apis/tasks";
-import { useCallback } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 export type ColumnProps = {
   id: Status;
@@ -18,19 +17,16 @@ export type ColumnProps = {
 const Column: React.FC<ColumnProps> = (props) => {
   const { id, title, tasks, showAddTask } = props;
   const { setNodeRef } = useDroppable({ id: id });
-  const {
-    addCard,
-    editCard,
-    currentColumnId,
-    setCurrentColumnId,
-    currentCard,
-    setCurrentCard,
-    dialogOpen,
-    setDialogOpen,
-    dialogMode,
-    setDialogMode,
-    resetCardDialogForm,
-  } = useTodoBoard();
+  const { setCurrentColumnId, setCurrentCard, setDialogOpen, setDialogMode, resetCardDialogForm } =
+    useTodoBoard(
+      useShallow((state) => ({
+        setCurrentColumnId: state.setCurrentColumnId,
+        setCurrentCard: state.setCurrentCard,
+        setDialogOpen: state.setDialogOpen,
+        setDialogMode: state.setDialogMode,
+        resetCardDialogForm: state.resetCardDialogForm,
+      }))
+    );
 
   const handleDialogOpen = (columnId: Status) => {
     setDialogMode("add");
@@ -39,30 +35,6 @@ const Column: React.FC<ColumnProps> = (props) => {
     resetCardDialogForm && resetCardDialogForm({ title: "" });
     setDialogOpen(true);
   };
-
-  // TODO >> ダイアログ側で直接呼び出せばよい（というか閉じるだけで他に処理がないなら実装自体不要）
-  const handleDialogClose = () => {
-    setDialogOpen(false);
-  };
-
-  const saveCard = useCallback(
-    (title: string) => {
-      if (dialogMode === "add") {
-        addCard(currentColumnId, title);
-        return;
-      }
-      editCard((currentCard as Task).id, title, currentColumnId);
-    },
-    [dialogMode, currentColumnId, currentCard, addCard, editCard]
-  );
-
-  const handleSaveCard = useCallback(
-    (title: string) => {
-      saveCard(title);
-      handleDialogClose();
-    },
-    [saveCard, handleDialogClose]
-  );
 
   return (
     <SortableContext id={id} items={tasks} strategy={verticalListSortingStrategy}>
@@ -100,6 +72,7 @@ const Column: React.FC<ColumnProps> = (props) => {
               variant="contained"
               onClick={() => handleDialogOpen(id)}
               sx={{ padding: "4px", margin: "4px", minWidth: "32px" }}
+              data-testid={`add-button-${id}`}
             >
               <AddCircleOutline />
             </Button>
@@ -111,9 +84,6 @@ const Column: React.FC<ColumnProps> = (props) => {
           </Box>
         ))}
       </Box>
-      {/* TODO >> カラムごとに持つ必要ないかも・・・ */}
-      {/* TODO >> 逆にkeyを指定してそれぞれに持たせる形にすれば、ごちゃごちゃした制御を削除できるはず・・・ */}
-      <CardDialog open={dialogOpen} onClose={handleDialogClose} onSave={handleSaveCard} />
     </SortableContext>
   );
 };

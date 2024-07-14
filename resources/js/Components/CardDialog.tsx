@@ -8,13 +8,12 @@ import {
 } from "@mui/material";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useTodoBoard } from "./useTodoBoard";
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 
 export type DialogMode = "add" | "edit";
 
 type CardDialogProps = {
   open: boolean;
-  onClose: () => void;
   onSave: (title: string) => void;
 };
 
@@ -22,8 +21,9 @@ export type FormValues = {
   title: string;
 };
 
-const CardDialog: React.FC<CardDialogProps> = ({ open, onClose, onSave }) => {
+const CardDialog: React.FC<CardDialogProps> = ({ open, onSave }) => {
   const dialogMode = useTodoBoard((state) => state.dialogMode);
+  const setDialogOpen = useTodoBoard((state) => state.setDialogOpen);
   const setResetCardDialogForm = useTodoBoard((state) => state.setResetCardDialogForm);
 
   const {
@@ -35,16 +35,19 @@ const CardDialog: React.FC<CardDialogProps> = ({ open, onClose, onSave }) => {
 
   useMemo(() => setResetCardDialogForm(reset), [setResetCardDialogForm, reset]);
 
-  const onSubmit: SubmitHandler<FormValues> = (data) => {
-    onSave(data.title);
-  };
+  const onSubmit: SubmitHandler<FormValues> = useCallback(
+    (data) => {
+      onSave(data.title);
+    },
+    [onSave]
+  );
 
-  const handleClose = () => {
-    onClose();
-  };
+  const handleClose = useCallback(() => {
+    setDialogOpen(false);
+  }, [setDialogOpen]);
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth>
+    <Dialog open={open} onClose={handleClose} fullWidth data-testid={"hogehoge"}>
       <DialogTitle>{dialogMode === "add" ? "追加" : "編集"}</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -60,7 +63,7 @@ const CardDialog: React.FC<CardDialogProps> = ({ open, onClose, onSave }) => {
             helperText={errors.title?.message}
           />
           <DialogActions>
-            <Button onClick={handleClose} color="primary">
+            <Button onClick={handleClose} color="primary" data-testid={`dialog-cancel`}>
               キャンセル
             </Button>
             <Button type="submit" color="primary" disabled={!isValid}>
