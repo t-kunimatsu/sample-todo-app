@@ -9,7 +9,7 @@ afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
 describe("useGetTasks", () => {
-  it("should fetch tasks successfully", async () => {
+  it("useGetTasks正常系", async () => {
     const tasks = [
       { id: 1, title: "Task 1", status: "todo" },
       { id: 2, title: "Task 2", status: "doing" },
@@ -27,7 +27,7 @@ describe("useGetTasks", () => {
     expect(result.current.error).toBeNull;
   });
 
-  it("should handle error", async () => {
+  it("useGetTasks異常系", async () => {
     server.use(
       http.get("/api/v1/tasks", () => {
         return new HttpResponse(null, {
@@ -45,9 +45,9 @@ describe("useGetTasks", () => {
 });
 
 describe("postTask", () => {
-  it("should post task successfully", async () => {
+  it("postTask正常系", async () => {
     const task: NewTask = { title: "Task 1", status: "todo" };
-    const responseTask = [{ id: 1, title: "Task 1", status: "todo" }];
+    const responseTask = { id: 1, title: "Task 1", status: "todo" };
     server.use(
       http.post("/api/v1/tasks", () => {
         return HttpResponse.json(responseTask);
@@ -58,7 +58,7 @@ describe("postTask", () => {
     expect(result.status).toBe(200);
   });
 
-  it("should handle axios error", async () => {
+  it("postTask異常系: axiosエラーハンドリング", async () => {
     const task: NewTask = { title: "Task 1", status: "todo" };
     server.use(
       http.post("/api/v1/tasks", () => {
@@ -74,7 +74,7 @@ describe("postTask", () => {
     expect(result.errors).toEqual(["bad request"]);
   });
 
-  it("should handle network error", async () => {
+  it("postTask異常系: ネットワークエラーハンドリング", async () => {
     const task: NewTask = { title: "Task 1", status: "todo" };
     const result = await postTask(task);
     expect(result.task).toBeNull;
@@ -84,7 +84,7 @@ describe("postTask", () => {
 });
 
 describe("patchTask", () => {
-  it("should patch task successfully", async () => {
+  it("patchTask正常系: position指定なし", async () => {
     const task: Task = { id: 1, title: "Task 1", status: "todo" };
     server.use(
       http.patch("/api/v1/tasks/1", () => {
@@ -97,7 +97,7 @@ describe("patchTask", () => {
     expect(result.status).toBe(200);
   });
 
-  it("should patch task with position successfully", async () => {
+  it("patchTask正常系: position指定あり", async () => {
     const task: Task = { id: 2, title: "Task 2", status: "todo" };
     server.use(
       http.patch("/api/v1/tasks/2", () => {
@@ -110,7 +110,7 @@ describe("patchTask", () => {
     expect(result.status).toBe(200);
   });
 
-  it("should handle axios error", async () => {
+  it("patchTask異常系: axiosエラーハンドリング", async () => {
     const task: Task = { id: 2, title: "Task 2", status: "todo" };
     server.use(
       http.patch("/api/v1/tasks/2", () => {
@@ -126,7 +126,7 @@ describe("patchTask", () => {
     expect(result.errors).toEqual(["bad request"]);
   });
 
-  it("should handle network error", async () => {
+  it("patchTask異常系: ネットワークエラーハンドリング", async () => {
     const task: Task = { id: 3, title: "Task 3", status: "todo" };
     const result = await patchTask(task);
     expect(result.task).toBeNull;
@@ -136,7 +136,7 @@ describe("patchTask", () => {
 });
 
 describe("deleteTask", () => {
-  it("should delete task successfully", async () => {
+  it("deleteTask正常系", async () => {
     server.use(
       http.delete("/api/v1/tasks/1", () => {
         return HttpResponse.json("", {
@@ -148,7 +148,7 @@ describe("deleteTask", () => {
     expect(result.status).toBe(200);
   });
 
-  it("should handle axios error", async () => {
+  it("deleteTask異常系: axiosエラーハンドリング", async () => {
     server.use(
       http.delete("/api/v1/tasks/2", () => {
         return new HttpResponse(JSON.stringify({ errors: ["not found"] }), {
@@ -163,7 +163,7 @@ describe("deleteTask", () => {
     expect(result.errors).toEqual(["not found"]);
   });
 
-  it("should handle network error", async () => {
+  it("deleteTask異常系: ネットワークエラーハンドリング", async () => {
     const result = await deleteTask(1);
     expect(result.task).toBeNull;
     expect(result.status).toBe(500);

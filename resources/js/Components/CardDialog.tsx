@@ -47,15 +47,19 @@ const CardDialog: React.FC<CardDialogProps> = ({ open, onSave }) => {
   }, [setDialogOpen]);
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth data-testid={"hogehoge"}>
-      <DialogTitle>{dialogMode === "add" ? "追加" : "編集"}</DialogTitle>
+    <Dialog open={open} onClose={handleClose} fullWidth>
+      <DialogTitle sx={{ paddingBottom: 0 }}>{dialogMode === "add" ? "追加" : "編集"}</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField
+            InputProps={{ disableUnderline: true }}
+            variant="standard"
             multiline
+            minRows={3}
             autoFocus
             margin="dense"
-            label="やること"
+            // label="やること"
+            placeholder="やること"
             type="text"
             fullWidth
             {...register("title", { required: "Title is required" })}
@@ -63,10 +67,10 @@ const CardDialog: React.FC<CardDialogProps> = ({ open, onSave }) => {
             helperText={errors.title?.message}
           />
           <DialogActions>
-            <Button onClick={handleClose} color="primary" data-testid={`dialog-cancel`}>
+            <Button onClick={handleClose} color="primary" data-testid={`cancel-button`}>
               キャンセル
             </Button>
-            <Button type="submit" color="primary" disabled={!isValid}>
+            <Button type="submit" color="primary" disabled={!isValid} data-testid={`save-button`}>
               保存
             </Button>
           </DialogActions>

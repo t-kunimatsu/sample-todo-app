@@ -66,6 +66,7 @@ const Card: React.FC<Task> = (task) => {
               alignItems: "center",
               cursor: isDragging ? "grabbing" : "grab",
             }}
+            data-testid={`drag-handle-${id}`}
           >
             <DragHandleIcon />
           </Box>
@@ -87,10 +88,18 @@ const Card: React.FC<Task> = (task) => {
               alignItems: "center",
             }}
           >
-            <IconButton onClick={() => handleDialogOpen(task)} sx={{ padding: "2px" }}>
+            <IconButton
+              onClick={() => handleDialogOpen(task)}
+              sx={{ padding: "2px" }}
+              data-testid={`edit-button-${id}`}
+            >
               <EditIcon />
             </IconButton>
-            <IconButton onClick={() => handleDeleteCard(task)} sx={{ padding: "2px" }}>
+            <IconButton
+              onClick={() => handleDeleteCard(task)}
+              sx={{ padding: "2px" }}
+              data-testid={`delete-button-${id}`}
+            >
               <DeleteOutlineIcon />
             </IconButton>
           </Box>
