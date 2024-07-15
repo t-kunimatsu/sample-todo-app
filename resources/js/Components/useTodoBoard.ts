@@ -89,7 +89,6 @@ export const useTodoBoard = create<BoardState>((set, get) => {
 
   const editCard = async (id: number, title: string, status: Status) => {
     const result = await patchTask({ id: id, title: title, status: status });
-    console.log(">>>>" + JSON.stringify(result, null, 2));
     if (result.status !== 200) {
       // TODO >> トースト表示する
       // TODO >> フロントには反映してしまう？（自動リカバリできるようにしたい）

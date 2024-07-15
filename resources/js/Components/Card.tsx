@@ -6,6 +6,7 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { Box, IconButton } from "@mui/material";
 import { useTodoBoard } from "./useTodoBoard";
 import { Task } from "@/Apis/tasks";
+import { useShallow } from "zustand/react/shallow";
 
 const Card: React.FC<Task> = (task) => {
   const { id, title } = task;
@@ -15,7 +16,15 @@ const Card: React.FC<Task> = (task) => {
     });
 
   const { setCurrentCard, setDialogOpen, setDialogMode, resetCardDialogForm, deleteCard } =
-    useTodoBoard();
+    useTodoBoard(
+      useShallow((state) => ({
+        setCurrentCard: state.setCurrentCard,
+        setDialogOpen: state.setDialogOpen,
+        setDialogMode: state.setDialogMode,
+        resetCardDialogForm: state.resetCardDialogForm,
+        deleteCard: state.deleteCard,
+      }))
+    );
 
   const handleDialogOpen = (task: Task) => {
     setDialogMode("edit");
@@ -57,6 +66,7 @@ const Card: React.FC<Task> = (task) => {
               alignItems: "center",
               cursor: isDragging ? "grabbing" : "grab",
             }}
+            data-testid={`drag-handle-${id}`}
           >
             <DragHandleIcon />
           </Box>
@@ -78,10 +88,18 @@ const Card: React.FC<Task> = (task) => {
               alignItems: "center",
             }}
           >
-            <IconButton onClick={() => handleDialogOpen(task)} sx={{ padding: "2px" }}>
+            <IconButton
+              onClick={() => handleDialogOpen(task)}
+              sx={{ padding: "2px" }}
+              data-testid={`edit-button-${id}`}
+            >
               <EditIcon />
             </IconButton>
-            <IconButton onClick={() => handleDeleteCard(task)} sx={{ padding: "2px" }}>
+            <IconButton
+              onClick={() => handleDeleteCard(task)}
+              sx={{ padding: "2px" }}
+              data-testid={`delete-button-${id}`}
+            >
               <DeleteOutlineIcon />
             </IconButton>
           </Box>

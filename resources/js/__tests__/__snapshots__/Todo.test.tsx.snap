@@ -1,0 +1,292 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`TODO画面コンポーネントのインテグレーションテスト > 描画されること 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root css-gdf3ln"
+  >
+    <div
+      class="MuiBox-root css-16n1ewp"
+    >
+      <div
+        class="MuiBox-root css-xzspde"
+      >
+        <h6
+          class="MuiTypography-root MuiTypography-h6 css-mrsppf-MuiTypography-root"
+        >
+          ToDo
+        </h6>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-pjo11h-MuiButtonBase-root-MuiButton-root"
+          data-testid="add-button-todo"
+          tabindex="0"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+            data-testid="AddCircleOutlineIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"
+            />
+          </svg>
+          <span
+            class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+      <div
+        class="MuiBox-root css-1yqeby0"
+      >
+        <div
+          style="width: 100%; margin: 2px; opacity: 1; color: rgb(51, 51, 51); background: white;"
+        >
+          <div
+            id="1"
+          >
+            <div
+              class="MuiBox-root css-1m8gbmy"
+            >
+              <div
+                aria-describedby="DndDescribedBy-0"
+                aria-disabled="false"
+                aria-roledescription="sortable"
+                class="MuiBox-root css-1tl7q9c"
+                data-testid="drag-handle-1"
+                role="button"
+                tabindex="0"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="DragHandleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M20 9H4v2h16zM4 15h16v-2H4z"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiBox-root css-pi7kp5"
+              >
+                <div
+                  class="MuiBox-root css-1kxrhf3"
+                >
+                  Task 1
+                </div>
+              </div>
+              <div
+                class="MuiBox-root css-70qvj9"
+              >
+                <button
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-lg24u0-MuiButtonBase-root-MuiIconButton-root"
+                  data-testid="edit-button-1"
+                  tabindex="0"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="EditIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"
+                    />
+                  </svg>
+                  <span
+                    class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                  />
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-lg24u0-MuiButtonBase-root-MuiIconButton-root"
+                  data-testid="delete-button-1"
+                  tabindex="0"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="DeleteOutlineIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM8 9h8v10H8zm7.5-5-1-1h-5l-1 1H5v2h14V4z"
+                    />
+                  </svg>
+                  <span
+                    class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiBox-root css-16n1ewp"
+    >
+      <div
+        class="MuiBox-root css-xzspde"
+      >
+        <h6
+          class="MuiTypography-root MuiTypography-h6 css-mrsppf-MuiTypography-root"
+        >
+          Doing
+        </h6>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeMedium MuiButton-containedSizeMedium MuiButton-colorPrimary css-pjo11h-MuiButtonBase-root-MuiButton-root"
+          data-testid="add-button-doing"
+          tabindex="0"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+            data-testid="AddCircleOutlineIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8"
+            />
+          </svg>
+          <span
+            class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+      <div
+        class="MuiBox-root css-1yqeby0"
+      >
+        <div
+          style="width: 100%; margin: 2px; opacity: 1; color: rgb(51, 51, 51); background: white;"
+        >
+          <div
+            id="2"
+          >
+            <div
+              class="MuiBox-root css-1m8gbmy"
+            >
+              <div
+                aria-describedby="DndDescribedBy-0"
+                aria-disabled="false"
+                aria-roledescription="sortable"
+                class="MuiBox-root css-1tl7q9c"
+                data-testid="drag-handle-2"
+                role="button"
+                tabindex="0"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                  data-testid="DragHandleIcon"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M20 9H4v2h16zM4 15h16v-2H4z"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiBox-root css-pi7kp5"
+              >
+                <div
+                  class="MuiBox-root css-1kxrhf3"
+                >
+                  Task 2
+                </div>
+              </div>
+              <div
+                class="MuiBox-root css-70qvj9"
+              >
+                <button
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-lg24u0-MuiButtonBase-root-MuiIconButton-root"
+                  data-testid="edit-button-2"
+                  tabindex="0"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="EditIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"
+                    />
+                  </svg>
+                  <span
+                    class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                  />
+                </button>
+                <button
+                  class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-lg24u0-MuiButtonBase-root-MuiIconButton-root"
+                  data-testid="delete-button-2"
+                  tabindex="0"
+                  type="button"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                    data-testid="DeleteOutlineIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM8 9h8v10H8zm7.5-5-1-1h-5l-1 1H5v2h14V4z"
+                    />
+                  </svg>
+                  <span
+                    class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiBox-root css-16n1ewp"
+    >
+      <div
+        class="MuiBox-root css-xzspde"
+      >
+        <h6
+          class="MuiTypography-root MuiTypography-h6 css-mrsppf-MuiTypography-root"
+        >
+          Done
+        </h6>
+      </div>
+    </div>
+  </div>
+  <div
+    id="DndDescribedBy-0"
+    style="display: none;"
+  >
+    
+    To pick up a draggable item, press the space bar.
+    While dragging, use the arrow keys to move the item.
+    Press space again to drop the item in its new position, or press escape to cancel.
+  
+  </div>
+  <div
+    aria-atomic="true"
+    aria-live="assertive"
+    id="DndLiveRegion-0"
+    role="status"
+    style="position: fixed; width: 1px; height: 1px; margin: -1px; border: 0px; padding: 0px; overflow: hidden; clip-path: inset(100%); white-space: nowrap;"
+  />
+</DocumentFragment>
+`;

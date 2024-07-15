@@ -20,6 +20,8 @@ export type ApiResult = {
   errors?: string[];
 };
 
+const UnexpectedError = { status: 500, errors: ["予期せぬエラーが発生しました。"] };
+
 const fetcher = (url: string): Promise<Task[]> => axios(url).then((res) => res.data);
 
 export const useGetTasks = () => {
@@ -34,17 +36,14 @@ export const postTask = async (task: NewTask): Promise<ApiResult> => {
       task: response.data,
     };
   } catch (e) {
-    if (isAxiosError(e)) {
+    if (isAxiosError(e) && e.response) {
       return {
-        status: e.response?.status ?? 500,
-        errors: e.response?.data.errors,
+        status: e.response.status,
+        errors: e.response.data.errors,
       };
     }
+    return UnexpectedError;
   }
-  return {
-    status: 500,
-    errors: ["予期せぬエラーが発生しました。"],
-  };
 };
 
 export const patchTask = async (task: Task, position?: number): Promise<ApiResult> => {
@@ -58,17 +57,14 @@ export const patchTask = async (task: Task, position?: number): Promise<ApiResul
       status: 200,
     };
   } catch (e) {
-    if (isAxiosError(e)) {
+    if (isAxiosError(e) && e.response) {
       return {
-        status: e.response?.status ?? 500,
-        errors: e.response?.data.errors,
+        status: e.response.status,
+        errors: e.response.data.errors,
       };
     }
+    return UnexpectedError;
   }
-  return {
-    status: 500,
-    errors: ["予期せぬエラーが発生しました。"],
-  };
 };
 
 export const deleteTask = async (id: number): Promise<ApiResult> => {
@@ -78,15 +74,12 @@ export const deleteTask = async (id: number): Promise<ApiResult> => {
       status: 200,
     };
   } catch (e) {
-    if (isAxiosError(e)) {
+    if (isAxiosError(e) && e.response) {
       return {
-        status: e.response?.status ?? 500,
-        errors: e.response?.data.errors,
+        status: e.response.status,
+        errors: e.response.data.errors,
       };
     }
+    return UnexpectedError;
   }
-  return {
-    status: 500,
-    errors: ["予期せぬエラーが発生しました。"],
-  };
 };
