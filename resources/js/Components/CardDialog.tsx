@@ -13,7 +13,6 @@ import { useCallback, useMemo } from "react";
 export type DialogMode = "add" | "edit";
 
 type CardDialogProps = {
-  open: boolean;
   onSave: (title: string) => void;
 };
 
@@ -21,8 +20,9 @@ export type FormValues = {
   title: string;
 };
 
-const CardDialog: React.FC<CardDialogProps> = ({ open, onSave }) => {
+const CardDialog: React.FC<CardDialogProps> = ({ onSave }) => {
   const dialogMode = useTodoBoard((state) => state.dialogMode);
+  const dialogOpen = useTodoBoard((state) => state.dialogOpen);
   const setDialogOpen = useTodoBoard((state) => state.setDialogOpen);
   const setResetCardDialogForm = useTodoBoard((state) => state.setResetCardDialogForm);
 
@@ -47,7 +47,7 @@ const CardDialog: React.FC<CardDialogProps> = ({ open, onSave }) => {
   }, [setDialogOpen]);
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth>
+    <Dialog open={dialogOpen} onClose={handleClose} fullWidth>
       <DialogTitle sx={{ paddingBottom: 0 }}>{dialogMode === "add" ? "追加" : "編集"}</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>

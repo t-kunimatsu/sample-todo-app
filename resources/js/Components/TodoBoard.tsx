@@ -8,12 +8,13 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import { useTodoBoard } from "./useTodoBoard";
 import CardDialog from "./CardDialog";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 import { Task } from "@/Apis/tasks";
+import { Snackbar } from "./Snackbar";
 
 const TodoBoard: React.FC = () => {
   const {
@@ -24,7 +25,6 @@ const TodoBoard: React.FC = () => {
     editCard,
     currentColumnId,
     currentCard,
-    dialogOpen,
     setDialogOpen,
     dialogMode,
   } = useTodoBoard(
@@ -36,7 +36,6 @@ const TodoBoard: React.FC = () => {
       editCard: state.editCard,
       currentColumnId: state.currentColumnId,
       currentCard: state.currentCard,
-      dialogOpen: state.dialogOpen,
       setDialogOpen: state.setDialogOpen,
       dialogMode: state.dialogMode,
     }))
@@ -80,7 +79,8 @@ const TodoBoard: React.FC = () => {
           <Column key={column.id} {...column} />
         ))}
       </Box>
-      <CardDialog open={dialogOpen} onSave={handleSaveCard} />
+      <Snackbar key="snack" />
+      <CardDialog onSave={handleSaveCard} />
     </DndContext>
   );
 };

@@ -18,6 +18,10 @@ type BoardState = {
   setCurrentColumnId: (id: Status) => void;
   currentCard: Task | NewTask;
   setCurrentCard: (task: Task | NewTask) => void;
+  snackbarOpen: boolean;
+  setSnackbarOpen: (open: boolean) => void;
+  snackbarMessages: string[];
+  setSnackbarMessages: (messages: string[]) => void;
   dialogOpen: boolean;
   setDialogOpen: (open: boolean) => void;
   dialogMode: DialogMode;
@@ -42,6 +46,13 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     return state.columns.find((column) => column.id === columnId) ?? null;
   };
 
+  const showSnackbar = (messages: string[]) => {
+    set((state) => ({
+      snackbarMessages: messages,
+      snackbarOpen: true,
+    }));
+  };
+
   const updateCardPosition = async (columnId: string, fromIndex: number, toIndex: number) => {
     const state = get();
     const column = state.columns.find((column) => column.id === columnId);
@@ -50,9 +61,8 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     const card = updatedCards[toIndex];
     const result = await patchTask({ ...card, status: column.id }, toIndex);
     if (result.status !== 200) {
-      // TODO >> トースト表示する
-      // すでにカラムを移動している場合は戻すの大変なので、並び順もフロントには反映してしまう
-      // TODO >> 自動リカバリの仕組みが必要
+      showSnackbar(result.errors ?? []);
+      return;
     }
     set((state) => ({
       columns: state.columns.map((column) =>
@@ -67,7 +77,7 @@ export const useTodoBoard = create<BoardState>((set, get) => {
       status: columnId,
     });
     if (!result.task) {
-      // TODO >> トースト表示する
+      showSnackbar(result.errors ?? []);
       return;
     }
     const newTask = result.task;
@@ -90,8 +100,7 @@ export const useTodoBoard = create<BoardState>((set, get) => {
   const editCard = async (id: number, title: string, status: Status) => {
     const result = await patchTask({ id: id, title: title, status: status });
     if (result.status !== 200) {
-      // TODO >> トースト表示する
-      // TODO >> フロントには反映してしまう？（自動リカバリできるようにしたい）
+      showSnackbar(result.errors ?? []);
       return;
     }
     set((state) => {
@@ -109,7 +118,7 @@ export const useTodoBoard = create<BoardState>((set, get) => {
   const deleteCard = async (id: number) => {
     const result = await deleteTask(id);
     if (result.status !== 200 && result.status !== 404) {
-      // TODO >> トースト表示する
+      showSnackbar(result.errors ?? []);
       return;
     }
     set((state) => {
@@ -219,6 +228,10 @@ export const useTodoBoard = create<BoardState>((set, get) => {
     setCurrentColumnId: (id) => set({ currentColumnId: id }),
     currentCard: { title: "", status: "todo" },
     setCurrentCard: (task) => set({ currentCard: task }),
+    snackbarOpen: false,
+    setSnackbarOpen: (open) => set({ snackbarOpen: open }),
+    snackbarMessages: [],
+    setSnackbarMessages: (messages) => set({ snackbarMessages: messages }),
     dialogOpen: false,
     setDialogOpen: (open) => set({ dialogOpen: open }),
     dialogMode: "add",
